@@ -5,6 +5,115 @@ import pickle
 import base64
 import tensorflow as tf
 import plotly.express as px
+# Custom CSS for dark purple theme
+st.markdown("""
+<style>
+
+    /* MAIN BACKGROUND */
+    [data-testid="stAppViewContainer"] {
+        background-image: url('abstract-gradient-neon-lights.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+    }
+
+    /* Remove white layer on top */
+    [data-testid="stAppViewBlockContainer"] {
+        background: transparent !important;
+    }
+
+    /* Make body transparent to show background */
+    html, body {
+        background-color: transparent !important;
+    }
+
+    /* CENTER FORM CONTENT NICELY */
+    .block-container {
+        max-width: 850px;
+        margin: auto;
+        padding-top: 40px;
+    }
+
+    /* Inputs styling */
+    .stTextInput>div>div>input,
+    .stNumberInput>div>div>input,
+    .stSelectbox>div>div>div {
+        background: rgba(0,0,0,0.45) !important;
+        color: #fff !important;
+        border-radius: 10px !important;
+        border: 1px solid rgba(255, 0, 255, 0.25);
+        padding: 8px;
+    }
+
+    label, p, span, div {
+        color: #f8d9ff !important;
+    }
+
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        background: rgba(0,0,0,0.55);
+        backdrop-filter: blur(8px);
+        border-radius: 10px;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        color: #dab0ff !important;
+        font-weight: 600;
+    }
+
+    .stTabs [data-baseweb="tab"][aria-selected="true"] {
+        color: #fff !important;
+        border-bottom: 3px solid #ff00ff !important;
+    }
+
+    /* Sidebar */
+    [data-testid="stSidebar"] {
+        background: rgba(0, 0, 0, 0.50) !important;
+        backdrop-filter: blur(10px);
+    }
+
+    /* Heading Colors */
+    h1, h2, h3, h4 {
+        color: #ffd6ff !important;
+    }
+
+    /* ----------------------------
+       GLASS CARD RESULT OUTPUT BOX
+       ---------------------------- */
+    .result-card {
+        background: rgba(20, 20, 35, 0.55);
+        border-radius: 18px;
+        padding: 22px;
+        margin-top: 25px;
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 0, 255, 0.18);
+        box-shadow: 0 0 20px rgba(255, 0, 255, 0.18);
+        transition: 0.25s ease-in-out;
+    }
+
+    .result-card:hover {
+        transform: translateY(-6px);
+        background: rgba(30, 30, 50, 0.65);
+        box-shadow: 0 0 35px rgba(255, 0, 255, 0.40);
+    }
+
+    .result-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #ffb3ff;
+        margin-bottom: 10px;
+    }
+
+    .result-text {
+        color: #ffffff;
+        font-size: 18px;
+        opacity: 0.9;
+    }
+
+</style>
+""", unsafe_allow_html=True)
+
 
 def get_downloader_html(df):
     csv = df.to_csv(index=False)
@@ -79,12 +188,15 @@ with tab1:
         result = predict_heart_disease(input_data)
 
         for i in range(len(predictions)):
-            st.subheader(algonames[i])
-            if result[i][0] == 0:
-                st.write("No Heart Disease Detected")
-            else:
-                st.write("Heart Disease Detected")
-            st.markdown('----------------------------')
+
+          diagnosis = "No Heart Disease Detected" if result[i][0] == 0 else "Heart Disease Detected"
+
+          st.markdown(f"""
+           <div class="result-card">
+             <div class="result-title">{algonames[i]}</div>
+             <div class="result-text">{diagnosis}</div>
+           </div>
+          """, unsafe_allow_html=True)
 
 # ============================== TAB 2 ==============================
 with tab2:
