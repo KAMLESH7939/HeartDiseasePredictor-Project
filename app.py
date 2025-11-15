@@ -139,7 +139,7 @@ def get_downloader_html(df):
 # ---------------------------------------------------
 # 🚀 Streamlit App UI
 # ---------------------------------------------------
-st.title("Heart Disease Prediction")
+st.title("Cardiac Disease Detection Model")
 
 tab1, tab2, tab3 = st.tabs(["Predict", "Bulk Predict", "Model Information"])
 
