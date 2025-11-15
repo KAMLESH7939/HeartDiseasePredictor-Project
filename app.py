@@ -41,7 +41,16 @@ html, body, [class*="css"] {{
     max-width: 1000px !important;
     padding-top: 25px;
 }}
-
+/* Center title */
+h1 {{ 
+    text-align: center !important;
+    margin-top: 40px !important;
+    margin-bottom: 30px !important;
+    font-size: 55px !important;
+    font-weight: 700 !important;
+    color: #ffdbff !important;
+    text-shadow: 0 0 20px rgba(255, 0, 180, 0.7);
+}}
 /* ============================
    INPUT CARD (Option A - Full Width)
 ============================= */
