@@ -23,10 +23,11 @@ html, body, [class*="css"] {
     font-family: 'Poppins', sans-serif !important;
 }
 
-/* ------------ CENTERED MAIN CONTAINER (REDUCED WIDTH) ------------ */
+/* ----------- FIXED CLEAN CENTERED WIDTH (PERFECT 900PX) ------------ */
 .main-container {
-    max-width: 1350px;
+    max-width: 900px;
     margin: auto;
+    padding-bottom: 80px;
 }
 
 /* ------------ BACKGROUND ------------ */
@@ -52,42 +53,41 @@ h1 {
 .stTabs [data-baseweb="tab-list"] {
     display: flex !important;
     justify-content: center !important;
-    gap: 18px !important;
+    gap: 15px !important;
 }
 
 .stTabs [data-baseweb="tab"] {
     background: rgba(40, 0, 60, 0.55);
-    padding: 10px 28px !important;
+    padding: 10px 25px !important;
     border-radius: 30px !important;
     border: 1px solid rgba(255, 0, 200, 0.35);
     color: #ffd6ff !important;
-    font-size: 17px !important;
+    font-size: 16px !important;
     font-weight: 600 !important;
     transition: none !important;
 }
 
-/* ACTIVE TAB */
 .stTabs [aria-selected="true"] {
     background: linear-gradient(90deg, #ff00cc, #9900ff) !important;
     color: white !important;
     border: none !important;
-    box-shadow: 0 0 20px rgba(255,0,200,0.7);
+    box-shadow: 0 0 18px rgba(255,0,200,0.7);
 }
 
 /* ------------ INPUT CARD ------------ */
 .neon-card {
     width: 100%;
-    padding: 22px;
-    border-radius: 35px;
+    padding: 20px;
+    border-radius: 28px;
     background: linear-gradient(90deg, rgba(80,0,120,0.7), rgba(20,0,40,0.6));
     border: 2px solid rgba(255,0,200,0.5);
-    box-shadow: 0 0 25px rgba(255,0,220,0.2);
-    margin-top: 28px;
+    box-shadow: 0 0 20px rgba(255,0,220,0.25);
+    margin-top: 25px;
 }
 
 .neon-card label {
     color: #ffffff !important;
-    font-size: 18px !important;
+    font-size: 17px !important;
     font-weight: 500 !important;
 }
 
@@ -110,24 +110,24 @@ h1 {
 /* ------------ RESULT CARD ------------ */
 .result-card {
     width: 100%;
-    margin-top: 28px;
+    margin-top: 25px;
     padding: 22px;
-    border-radius: 35px;
+    border-radius: 28px;
     background: linear-gradient(90deg, rgba(80,0,120,0.7), rgba(20,0,40,0.6));
     border: 2px solid rgba(255,0,200,0.6);
-    box-shadow: 0 0 40px rgba(255,0,200,0.25);
+    box-shadow: 0 0 35px rgba(255,0,200,0.25);
 }
 
 .result-title {
-    font-size: 26px;
+    font-size: 24px;
     color: #ffb3ff;
     font-weight: 700;
 }
 
 .result-text {
-    font-size: 20px;
+    font-size: 19px;
     color: #ffffff;
-    margin-top: 6px;
+    margin-top: 5px;
 }
 
 </style>
@@ -236,8 +236,7 @@ with tab1:
         return predictions
 
     # Predict button
-    if st.button("Predict", type="primary", key="predict", help="", 
-                 use_container_width=False):
+    if st.button("Predict", type="primary", help="", key="predict-btn"):
         results = run_prediction(input_data)
 
         for i, (name, _) in enumerate(models):
