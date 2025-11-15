@@ -46,7 +46,7 @@ html, body, [class*="css"] {{
 --------------------------------*/
 h1 {{ 
     text-align: center !important;
-    margin-top: 20px !important;
+    margin-top: 10px !important;
     margin-bottom: 40px !important;
     font-size: 55px !important;
     font-weight: 700 !important;
@@ -84,7 +84,7 @@ h1 {{
     position: relative;
     border-radius: 30px;
     padding: 10px;
-    margin: 25px 0;
+    margin: 10px 0;
     width: 100%;
     background-image:
         linear-gradient(rgba(18,12,25,0.90), rgba(18,12,25,0.90)),
