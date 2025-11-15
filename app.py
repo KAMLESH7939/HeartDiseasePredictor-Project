@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit as st 
 import pandas as pd
 import numpy as np
 import pickle
@@ -6,18 +6,18 @@ import base64
 import tensorflow as tf
 import plotly.express as px
 
-# -------------------------
-# Load background image as base64
-# -------------------------
+# ============================================================
+# Load background image
+# ============================================================
 def get_base64_image(path):
     with open(path, "rb") as f:
         return base64.b64encode(f.read()).decode()
 
 background_base64 = get_base64_image("gradientt.jpg")
 
-# -------------------------
-# Inject CSS
-# -------------------------
+# ============================================================
+# CSS STYLING
+# ============================================================
 st.markdown(
     f"""
 <style>
@@ -34,50 +34,77 @@ html, body, [class*="css"] {{
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    background-repeat: no-repeat;
 }}
 
 .block-container {{
-    max-width: 1000px !important;
-    padding-top: 25px;
+    max-width: 950px !important;
+    margin-top: 25px !important;
 }}
-/* Center title */
+
+/* ------------------------------
+   TITLE
+--------------------------------*/
 h1 {{ 
     text-align: center !important;
     margin-top: 40px !important;
-    margin-bottom: 30px !important;
+    margin-bottom: 40px !important;
     font-size: 55px !important;
     font-weight: 700 !important;
-    color: #ffdbff !important;
-    text-shadow: 0 0 20px rgba(255, 0, 180, 0.7);
+    color: #ffe0ff !important;
+    text-shadow: 0 0 25px rgba(255, 0, 200, 0.75);
 }}
-/* ============================
-   INPUT CARD (Option A - Full Width)
-============================= */
+
+/* ------------------------------
+   TABS (Capsule Style)
+--------------------------------*/
+.stTabs [data-baseweb="tab"] {{
+    background: rgba(255,255,255,0.07) !important;
+    border-radius: 25px !important;
+    padding: 12px 25px !important;
+    margin-right: 10px !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255,0,180,0.4) !important;
+}}
+
+.stTabs [aria-selected="true"] {{
+    background: linear-gradient(90deg, #ff00ff, #ff44cc) !important;
+    color: white !important;
+    border: none !important;
+}}
+
+.stTabs [data-baseweb="tab"]:hover {{
+    transform: scale(1.05);
+    transition: 0.2s ease-in-out;
+}}
+
+/* ------------------------------
+   INPUT CARD (Neon Box)
+--------------------------------*/
 .input-card {{
     position: relative;
-    border-radius: 25px;
-    padding: 22px;
-    margin-bottom: 25px;
+    border-radius: 30px;
+    padding: 25px;
+    margin: 25px 0;
     width: 100%;
-
     background-image:
-        linear-gradient(rgba(18,12,25,0.85), rgba(18,12,25,0.85)),
-        linear-gradient(90deg, #ff00ff, #8b00ff, #ff0099);
+        linear-gradient(rgba(18,12,25,0.90), rgba(18,12,25,0.90)),
+        linear-gradient(90deg, #ff00ff, #9b00ff, #ff0099);
     background-origin: border-box;
     background-clip: padding-box, border-box;
-
     border: 2px solid transparent;
-    box-shadow: 0 8px 35px rgba(255,0,255,0.15),
-                0 0 25px rgba(120,0,255,0.12);
+
+    box-shadow: 
+        0 0 20px rgba(255, 0, 200, 0.3),
+        0 0 40px rgba(140, 0, 255, 0.2);
 
     transition: 0.25s ease-in-out;
 }}
 
 .input-card:hover {{
-    transform: translateY(-6px);
-    box-shadow: 0 18px 55px rgba(255,0,255,0.25),
-                0 0 45px rgba(120,0,255,0.20);
+    transform: translateY(-5px);
+    box-shadow: 
+        0 0 25px rgba(255, 0, 200, 0.45),
+        0 0 50px rgba(140, 0, 255, 0.35);
 }}
 
 .input-card label {{
@@ -87,105 +114,78 @@ h1 {{
     margin-bottom: 10px !important;
 }}
 
-.input-card .stNumberInput>div>div>input,
-.input-card .stTextInput>div>div>input,
-.input-card .stSelectbox>div>div>div {{
+.input-card .stNumberInput input,
+.input-card .stTextInput input,
+.input-card .stSelectbox>div>div {{
     background: rgba(0,0,0,0.55) !important;
     color: white !important;
-    border-radius: 10px !important;
-    border: 1px solid rgba(255,0,255,0.25) !important;
-    padding: 12px !important;
+    border-radius: 12px !important;
+    padding: 14px !important;
+    border: 1px solid rgba(255,0,255,0.3) !important;
     font-size: 17px !important;
 }}
 
-.input-card .stNumberInput>div>div>input:hover,
-.input-card .stTextInput>div>div>input:hover,
-.input-card .stSelectbox>div>div>div:hover {{
+.input-card .stSelectbox>div>div:hover,
+.input-card .stNumberInput input:hover {{
     border-color: #ff00ff !important;
-    box-shadow: 0 0 12px rgba(255,0,255,0.2);
+    box-shadow: 0 0 12px rgba(255,0,255,0.25);
 }}
 
-.input-card input::placeholder {{
-    color: rgba(255,255,255,0.6);
-}}
-
-/* ============================
-   Center Predict Button (FULL WIDTH LAYOUT)
-============================= */
+/* ------------------------------
+   PREDICT BUTTON
+--------------------------------*/
 .center-btn {{
     width: 100%;
     display: flex;
     justify-content: center;
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin-top: 10px;
 }}
 
 .stButton>button {{
     background: linear-gradient(90deg, #ff00ff, #ff33cc, #ff66aa);
     border: none;
     color: white !important;
-    padding: 14px 40px;
-    font-size: 20px;
+    padding: 16px 45px;
+    font-size: 22px;
     font-weight: 700;
-    border-radius: 14px;
+    border-radius: 50px;
     cursor: pointer;
 
-    box-shadow: 0 8px 25px rgba(255,0,255,0.25),
-                inset 0 0 10px rgba(255,255,255,0.15);
+    box-shadow: 
+        0 8px 25px rgba(255,0,255,0.25),
+        inset 0 0 12px rgba(255,255,255,0.15);
 
     transition: 0.2s ease-in-out;
 }}
 
 .stButton>button:hover {{
-    transform: translateY(-5px) scale(1.03);
-    box-shadow: 0 18px 45px rgba(255,0,255,0.35),
-                0 0 55px rgba(255,0,200,0.25);
+    transform: translateY(-5px) scale(1.05);
+    box-shadow:
+        0 18px 45px rgba(255,0,255,0.35),
+        0 0 60px rgba(255,0,200,0.35);
 }}
 
-.stButton>button:active {{
-    transform: scale(0.98);
-}}
-
-/* ============================
-   RESULT CARDS - FULL WIDTH
-============================= */
+/* ------------------------------
+   OUTPUT RESULT CARD
+--------------------------------*/
 .result-card {{
     width: 100%;
     padding: 25px;
-    margin-top: 20px;
-
+    margin-top: 25px;
     border-radius: 25px;
     background-image:
         linear-gradient(rgba(30,18,45,0.85), rgba(30,18,45,0.85)),
         linear-gradient(45deg, #ff00ff, #7a00ff, #ff0090);
     background-origin: border-box;
     background-clip: padding-box, border-box;
-
     border: 2px solid transparent;
-    animation: neonPulse 3s ease-in-out infinite;
-
-    transition: 0.2s ease-in-out;
-}}
-
-.result-card:hover {{
-    transform: translateY(-10px);
-    box-shadow: 0 25px 60px rgba(255,0,255,0.3),
-                0 0 60px rgba(120,0,255,0.25);
+    animation: neonPulse 3s infinite ease-in-out;
 }}
 
 @keyframes neonPulse {{
-    0% {{
-        box-shadow: 0 0 12px rgba(255,0,255,0.25),
-                    0 0 25px rgba(120,0,255,0.18);
-    }}
-    50% {{
-        box-shadow: 0 0 30px rgba(255,0,255,0.5),
-                    0 0 55px rgba(255,80,180,0.3);
-    }}
-    100% {{
-        box-shadow: 0 0 12px rgba(255,0,255,0.25),
-                    0 0 25px rgba(120,0,255,0.18);
-    }}
+    0% {{ box-shadow: 0 0 12px rgba(255,0,255,0.25); }}
+    50% {{ box-shadow: 0 0 45px rgba(255,0,255,0.55); }}
+    100% {{ box-shadow: 0 0 12px rgba(255,0,255,0.25); }}
 }}
 
 .result-title {{
@@ -196,7 +196,6 @@ h1 {{
 
 .result-text {{
     font-size: 18px;
-    margin-top: 10px;
     color: #ffffff;
 }}
 
@@ -205,23 +204,10 @@ h1 {{
     unsafe_allow_html=True,
 )
 
-# -------------------------
-# Download CSV Helper
-# -------------------------
-def get_downloader_html(df):
-    b64 = base64.b64encode(df.to_csv(index=False).encode()).decode()
-    return f'<a href="data:file/csv;base64,{b64}" download="predicted.csv">Download CSV</a>'
+# ============================================================
+# HELPERS
+# ============================================================
 
-# -------------------------
-# PAGE TITLE
-# -------------------------
-st.title("Cardiac Disease Detection Model")
-
-tab1, tab2, tab3 = st.tabs(["Predict", "Bulk Predict", "Model Information"])
-
-# -------------------------
-# CARD INPUT FUNCTIONS
-# -------------------------
 def card_input_number(label, **kwargs):
     st.markdown('<div class="input-card">', unsafe_allow_html=True)
     value = st.number_input(label, **kwargs)
@@ -234,24 +220,31 @@ def card_input_select(label, options):
     st.markdown('</div>', unsafe_allow_html=True)
     return value
 
-# -------------------------
-# TAB 1 — PREDICT
-# -------------------------
+# ============================================================
+# PAGE TITLE
+# ============================================================
+st.title("Cardiac Disease Detection Model")
+
+tab1, tab2, tab3 = st.tabs(["Predict", "Bulk Predict", "Model Information"])
+
+
+# ============================================================
+# TAB 1
+# ============================================================
 with tab1:
 
     age = card_input_number("Age", min_value=1, max_value=120, value=45)
     sex = card_input_select("Sex", ["Male", "Female"])
     cpt = card_input_select("Chest Pain Type", ["Typical Angina","Atypical Angina","Non-anginal Pain","Asymptomatic"])
     rbp = card_input_number("Resting Blood Pressure", min_value=0, max_value=300, value=120)
-    chol = card_input_number("Cholesterol (mg/dl)", min_value=0, max_value=1000, value=200)
+    chol = card_input_number("Cholesterol (mg/dl)", min_value=0, max_value=900, value=200)
     fbs = card_input_select("Fasting Blood Sugar", ["<= 120 mg/dl", "> 120 mg/dl"])
     ecg = card_input_select("Resting ECG", ["Normal","ST-T wave abnormality","Left ventricular hypertrophy"])
     mhr = card_input_number("Max Heart Rate Achieved", min_value=60, max_value=202, value=150)
     ang = card_input_select("Exercise Induced Angina", ["Yes","No"])
-    old = card_input_number("Oldpeak", min_value=0.0, max_value=10.0, value=1.0, step=0.1, format="%.1f")
-    slope = card_input_select("Slope of peak exercise ST segment", ["Upsloping","Flat","Downsloping"])
+    old = card_input_number("Oldpeak", min_value=0.0, max_value=10.0, value=1.0, step=0.1)
+    slope = card_input_select("Slope of ST Segment", ["Upsloping","Flat","Downsloping"])
 
-    # Encoding
     df = pd.DataFrame({
         "Age": [age],
         "Sex": [0 if sex=="Male" else 1],
@@ -274,12 +267,10 @@ with tab1:
         ("CNN","cnn_1d_model.keras"),
     ]
 
-    # CENTERED BUTTON
     st.markdown("<div class='center-btn'>", unsafe_allow_html=True)
-    predict_clicked = st.button("Predict")
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    if predict_clicked:
+    if st.button("Predict"):
+        st.markdown("</div>", unsafe_allow_html=True)
+        
         for name, path in models:
             try:
                 if path.endswith(".pkl"):
@@ -289,24 +280,28 @@ with tab1:
                     model = tf.keras.models.load_model(path)
                     pred = int(model.predict(df.values.reshape(1,-1,1)) > 0.5)
             except Exception as e:
-                st.error(f"Model load error {name}: {e}")
+                st.error(f"Model error {name}: {e}")
                 pred = 0
 
-            diagnosis = "No Heart Disease" if pred==0 else "Heart Disease Detected"
+            result = "No Heart Disease" if pred == 0 else "Heart Disease Detected"
 
             st.markdown(
                 f"""
                 <div class="result-card">
                     <div class="result-title">{name}</div>
-                    <div class="result-text">{diagnosis}</div>
+                    <div class="result-text">{result}</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
+    else:
+        st.markdown("</div>", unsafe_allow_html=True)
 
-# -------------------------
-# TAB 2 — BULK PREDICT
-# -------------------------
+
+
+# ============================================================
+# TAB 2
+# ============================================================
 with tab2:
     st.subheader("Upload CSV for Bulk Prediction")
     up = st.file_uploader("Upload CSV", type="csv")
@@ -334,11 +329,13 @@ with tab2:
             df["Prediction"] = model.predict(df[cols])
 
             st.write(df)
-            st.markdown(get_downloader_html(df), unsafe_allow_html=True)
 
-# -------------------------
-# TAB 3 — MODEL INFO
-# -------------------------
+            b64 = base64.b64encode(df.to_csv(index=False).encode()).decode()
+            st.markdown(f'<a href="data:file/csv;base64,{b64}" download="predicted.csv">Download CSV</a>', unsafe_allow_html=True)
+
+# ============================================================
+# TAB 3
+# ============================================================
 with tab3:
     acc = {
         "Logistic Regression":85.86,
