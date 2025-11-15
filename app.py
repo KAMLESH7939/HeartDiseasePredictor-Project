@@ -5,83 +5,92 @@ import pickle
 import base64
 import tensorflow as tf
 import plotly.express as px
-# Custom CSS for dark purple theme
-st.markdown("""
+
+
+# ---------------------------------------------------
+# 🚀 Load Background Image as Base64
+# ---------------------------------------------------
+def get_base64_of_image(image_path):
+    with open(image_path, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+img_base64 = get_base64_of_image("gradientt.jpg")
+
+
+# ---------------------------------------------------
+# 🚀 Inject Custom CSS + Background Image
+# ---------------------------------------------------
+st.markdown(
+    f"""
 <style>
 
     /* MAIN BACKGROUND */
-    [data-testid="stAppViewContainer"] {
-        background-image: url('abstract-gradient-neon-lights.jpg');
+    [data-testid="stAppViewContainer"] {{
+        background-image: url("data:image/jpg;base64,{img_base64}");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
         background-repeat: no-repeat;
-    }
-
-    /* Remove white layer on top */
-    [data-testid="stAppViewBlockContainer"] {
-        background: transparent !important;
-    }
+    }}
 
     /* Make body transparent to show background */
-    html, body {
+    html, body {{
         background-color: transparent !important;
-    }
+    }}
 
     /* CENTER FORM CONTENT NICELY */
-    .block-container {
+    .block-container {{
         max-width: 850px;
         margin: auto;
         padding-top: 40px;
-    }
+    }}
 
     /* Inputs styling */
     .stTextInput>div>div>input,
     .stNumberInput>div>div>input,
-    .stSelectbox>div>div>div {
+    .stSelectbox>div>div>div {{
         background: rgba(0,0,0,0.45) !important;
         color: #fff !important;
         border-radius: 10px !important;
         border: 1px solid rgba(255, 0, 255, 0.25);
         padding: 8px;
-    }
+    }}
 
-    label, p, span, div {
+    label, p, span, div {{
         color: #f8d9ff !important;
-    }
+    }}
 
     /* Tabs */
-    .stTabs [data-baseweb="tab-list"] {
+    .stTabs [data-baseweb="tab-list"] {{
         background: rgba(0,0,0,0.55);
         backdrop-filter: blur(8px);
         border-radius: 10px;
-    }
+    }}
 
-    .stTabs [data-baseweb="tab"] {
+    .stTabs [data-baseweb="tab"] {{
         color: #dab0ff !important;
         font-weight: 600;
-    }
+    }}
 
-    .stTabs [data-baseweb="tab"][aria-selected="true"] {
+    .stTabs [data-baseweb="tab"][aria-selected="true"] {{
         color: #fff !important;
         border-bottom: 3px solid #ff00ff !important;
-    }
+    }}
 
     /* Sidebar */
-    [data-testid="stSidebar"] {
+    [data-testid="stSidebar"] {{
         background: rgba(0, 0, 0, 0.50) !important;
         backdrop-filter: blur(10px);
-    }
+    }}
 
     /* Heading Colors */
-    h1, h2, h3, h4 {
+    h1, h2, h3, h4 {{
         color: #ffd6ff !important;
-    }
+    }}
 
-    /* ----------------------------
-       GLASS CARD RESULT OUTPUT BOX
-       ---------------------------- */
-    .result-card {
+    /* RESULT CARD */
+    .result-card {{
         background: rgba(20, 20, 35, 0.55);
         border-radius: 18px;
         padding: 22px;
@@ -90,39 +99,50 @@ st.markdown("""
         border: 1px solid rgba(255, 0, 255, 0.18);
         box-shadow: 0 0 20px rgba(255, 0, 255, 0.18);
         transition: 0.25s ease-in-out;
-    }
+    }}
 
-    .result-card:hover {
+    .result-card:hover {{
         transform: translateY(-6px);
         background: rgba(30, 30, 50, 0.65);
         box-shadow: 0 0 35px rgba(255, 0, 255, 0.40);
-    }
+    }}
 
-    .result-title {
+    .result-title {{
         font-size: 24px;
         font-weight: 700;
         color: #ffb3ff;
         margin-bottom: 10px;
-    }
+    }}
 
-    .result-text {
+    .result-text {{
         color: #ffffff;
         font-size: 18px;
         opacity: 0.9;
-    }
+    }}
 
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True
+)
 
 
+# ---------------------------------------------------
+# 🚀 Helper for CSV download
+# ---------------------------------------------------
 def get_downloader_html(df):
     csv = df.to_csv(index=False)
     b64 = base64.b64encode(csv.encode()).decode()
     href = f'<a href="data:file/csv;base64,{b64}" download="predicted_heart_disease.csv">Download CSV File</a>'
     return href
 
+
+# ---------------------------------------------------
+# 🚀 Streamlit App UI
+# ---------------------------------------------------
 st.title("Heart Disease Prediction")
+
 tab1, tab2, tab3 = st.tabs(["Predict", "Bulk Predict", "Model Information"])
+
 
 # ============================== TAB 1 ==============================
 with tab1:
@@ -138,7 +158,7 @@ with tab1:
     oldpeak = st.number_input("Oldpeak (ST depression induced by exercise)", min_value=0.0, max_value=10.0, format="%.1f")
     st_slope = st.selectbox("Slope of the peak exercise ST segment", ["Upsloping", "Flat", "Downsloping"])
 
-    # Categorical conversion
+    # Categorical encoding
     sex = 0 if sex == "Male" else 1
     chest_pain_dict = {"Typical Angina": 3, "Atypical Angina": 0, "Non-anginal Pain": 1, "Asymptomatic": 2}
     chest_pain = chest_pain_dict[chest_pain]
@@ -170,7 +190,7 @@ with tab1:
     predictions = []
 
     def predict_heart_disease(data):
-        for i, modelname in enumerate(modelnames):
+        for modelname in modelnames:
             if modelname.endswith('.pkl'):
                 model = pickle.load(open(modelname, 'rb'))
                 prediction = model.predict(data)
@@ -188,40 +208,31 @@ with tab1:
         result = predict_heart_disease(input_data)
 
         for i in range(len(predictions)):
+            diagnosis = "No Heart Disease Detected" if result[i][0] == 0 else "Heart Disease Detected"
 
-          diagnosis = "No Heart Disease Detected" if result[i][0] == 0 else "Heart Disease Detected"
+            st.markdown(f"""
+            <div class="result-card">
+                <div class="result-title">{algonames[i]}</div>
+                <div class="result-text">{diagnosis}</div>
+            </div>
+            """, unsafe_allow_html=True)
 
-          st.markdown(f"""
-           <div class="result-card">
-             <div class="result-title">{algonames[i]}</div>
-             <div class="result-text">{diagnosis}</div>
-           </div>
-          """, unsafe_allow_html=True)
 
 # ============================== TAB 2 ==============================
 with tab2:
     st.title("Upload CSV for Bulk Prediction")
-
     st.subheader("Instructions:")
     st.info("""
-    Your CSV MUST contain these columns:
+Your CSV MUST contain:
 
-    Age, Sex, ChestPainType, RestingBP, Cholesterol, FastingBS,
-    RestingECG, MaxHR, ExerciseAngina, Oldpeak, ST_Slope
-
-    The app will automatically convert:
-    - Sex: M/F → 0/1
-    - ChestPainType: TA/ATA/NAP/ASY → 3/0/1/2
-    - RestingECG: Normal/ST/LVH → 0/1/2
-    - ExerciseAngina: Y/N → 1/0
-    - ST_Slope: Up/Flat/Down → 0/1/2
-    """)
+Age, Sex, ChestPainType, RestingBP, Cholesterol, FastingBS,
+RestingECG, MaxHR, ExerciseAngina, Oldpeak, ST_Slope
+""")
 
     uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 
     if uploaded_file is not None:
         data = pd.read_csv(uploaded_file)
-
         model = pickle.load(open("logistic_regression_model.pkl", 'rb'))
 
         expected_columns = [
@@ -230,23 +241,18 @@ with tab2:
             'Oldpeak', 'ST_Slope'
         ]
 
-        # Check for required columns
         if not set(expected_columns).issubset(data.columns):
             st.warning("The uploaded CSV does NOT contain the required columns.")
             st.stop()
 
-        # -----------------------------
-        # AUTO-ENCODING STARTS HERE
-        # -----------------------------
-
-        # Encoding dictionaries
+        # Maps
         sex_map = {"M": 0, "F": 1, "Male": 0, "Female": 1}
         cp_map = {"ATA": 0, "NAP": 1, "ASY": 2, "TA": 3}
         ecg_map = {"Normal": 0, "ST": 1, "LVH": 2}
         angina_map = {"Y": 1, "N": 0, "Yes": 1, "No": 0}
         slope_map = {"Up": 0, "Flat": 1, "Down": 2}
 
-        # Apply mapping only if column contains strings
+        # Auto encode
         if data['Sex'].dtype == object:
             data['Sex'] = data['Sex'].map(sex_map)
 
@@ -262,28 +268,20 @@ with tab2:
         if data['ST_Slope'].dtype == object:
             data['ST_Slope'] = data['ST_Slope'].map(slope_map)
 
-        # Convert entire dataframe to float
         data = data.astype(float)
 
-        # -----------------------------
-        # MAKE PREDICTIONS
-        # -----------------------------
+        # Predict
         data['Prediction LR'] = ''
 
         for i in range(len(data)):
             arr = data.iloc[i, :-1].values.astype(float)
             data.loc[i, 'Prediction LR'] = model.predict([arr])[0]
 
-        # Save CSV
         data.to_csv("PredictedHeart.csv", index=False)
 
         st.subheader("Prediction Results:")
         st.write(data)
-
         st.markdown(get_downloader_html(data), unsafe_allow_html=True)
-
-    else:
-        st.info("Awaiting CSV file upload...")
 
 
 # ============================== TAB 3 ==============================
