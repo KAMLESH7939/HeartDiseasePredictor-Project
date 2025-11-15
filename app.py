@@ -6,7 +6,6 @@ import base64
 import tensorflow as tf
 import plotly.express as px
 
-
 # ---------------------------------------------------
 # 🚀 Load Background Image as Base64
 # ---------------------------------------------------
@@ -15,26 +14,32 @@ def get_base64_of_image(image_path):
         data = f.read()
     return base64.b64encode(data).decode()
 
-img_base64 = get_base64_of_image("gradientt.jpg")
+background_base64 = get_base64_of_image("gradientt.jpg")
 
 
 # ---------------------------------------------------
-# 🚀 Inject Custom CSS + Background Image
+# 🚀 Inject FULL Custom CSS (Poppins + Larger Labels)
 # ---------------------------------------------------
 st.markdown(
     f"""
 <style>
 
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+    /* GLOBAL FONT */
+    html, body, [class*="css"] {{
+        font-family: 'Poppins', sans-serif !important;
+    }}
+
     /* MAIN BACKGROUND */
     [data-testid="stAppViewContainer"] {{
-        background-image: url("data:image/jpg;base64,{img_base64}");
+        background-image: url("data:image/jpg;base64,{background_base64}");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
         background-repeat: no-repeat;
     }}
 
-    /* Make body transparent to show background */
     html, body {{
         background-color: transparent !important;
     }}
@@ -46,7 +51,7 @@ st.markdown(
         padding-top: 40px;
     }}
 
-    /* Inputs styling */
+    /* INPUTS */
     .stTextInput>div>div>input,
     .stNumberInput>div>div>input,
     .stSelectbox>div>div>div {{
@@ -55,13 +60,24 @@ st.markdown(
         border-radius: 10px !important;
         border: 1px solid rgba(255, 0, 255, 0.25);
         padding: 8px;
+        font-size: 16px !important;
     }}
 
-    label, p, span, div {{
+    /* LABELS */
+    label {{
+        font-size: 18px !important;
+        font-weight: 500 !important;
+        color: #ffd9ff !important;
+    }}
+
+    /* TEXT */
+    p, span, div {{
+        font-size: 16px;
+        font-family: 'Poppins', sans-serif !important;
         color: #f8d9ff !important;
     }}
 
-    /* Tabs */
+    /* TABS */
     .stTabs [data-baseweb="tab-list"] {{
         background: rgba(0,0,0,0.55);
         backdrop-filter: blur(8px);
@@ -70,7 +86,9 @@ st.markdown(
 
     .stTabs [data-baseweb="tab"] {{
         color: #dab0ff !important;
-        font-weight: 600;
+        font-weight: 500;
+        font-size: 17px !important;
+        padding: 10px 18px !important;
     }}
 
     .stTabs [data-baseweb="tab"][aria-selected="true"] {{
@@ -78,15 +96,17 @@ st.markdown(
         border-bottom: 3px solid #ff00ff !important;
     }}
 
-    /* Sidebar */
+    /* SIDEBAR */
     [data-testid="stSidebar"] {{
         background: rgba(0, 0, 0, 0.50) !important;
         backdrop-filter: blur(10px);
     }}
 
-    /* Heading Colors */
+    /* HEADINGS */
     h1, h2, h3, h4 {{
         color: #ffd6ff !important;
+        font-family: 'Poppins', sans-serif !important;
+        font-weight: 600 !important;
     }}
 
     /* RESULT CARD */
@@ -109,15 +129,17 @@ st.markdown(
 
     .result-title {{
         font-size: 24px;
-        font-weight: 700;
+        font-weight: 600;
         color: #ffb3ff;
         margin-bottom: 10px;
+        font-family: 'Poppins', sans-serif !important;
     }}
 
     .result-text {{
         color: #ffffff;
         font-size: 18px;
         opacity: 0.9;
+        font-family: 'Poppins', sans-serif !important;
     }}
 
 </style>
@@ -127,7 +149,7 @@ st.markdown(
 
 
 # ---------------------------------------------------
-# 🚀 Helper for CSV download
+# 🚀 Download Helper
 # ---------------------------------------------------
 def get_downloader_html(df):
     csv = df.to_csv(index=False)
@@ -137,14 +159,14 @@ def get_downloader_html(df):
 
 
 # ---------------------------------------------------
-# 🚀 Streamlit App UI
+# 🚀 STREAMLIT APP
 # ---------------------------------------------------
+
 st.title("Cardiac Disease Detection Model")
 
 tab1, tab2, tab3 = st.tabs(["Predict", "Bulk Predict", "Model Information"])
 
-
-# ============================== TAB 1 ==============================
+# ======================== TAB 1 ========================
 with tab1:
     age = st.number_input("Age", min_value=1, max_value=120)
     sex = st.selectbox("Sex", ["Male", "Female"])
@@ -158,70 +180,72 @@ with tab1:
     oldpeak = st.number_input("Oldpeak (ST depression induced by exercise)", min_value=0.0, max_value=10.0, format="%.1f")
     st_slope = st.selectbox("Slope of the peak exercise ST segment", ["Upsloping", "Flat", "Downsloping"])
 
-    # Categorical encoding
+
+    # Encoding
     sex = 0 if sex == "Male" else 1
     chest_pain_dict = {"Typical Angina": 3, "Atypical Angina": 0, "Non-anginal Pain": 1, "Asymptomatic": 2}
     chest_pain = chest_pain_dict[chest_pain]
     fasting_bs = 0 if fasting_bs == "<= 120 mg/dl" else 1
-    resting_ecg_dict = {"Normal": 0, "ST-T wave abnormality": 1, "Left ventricular hypertrophy": 2}
-    resting_ecg = resting_ecg_dict[resting_ecg]
+    rest_ecg_dict = {"Normal": 0, "ST-T wave abnormality": 1, "Left ventricular hypertrophy": 2}
+    resting_ecg = rest_ecg_dict[resting_ecg]
     exercise_angina = 1 if exercise_angina == "Yes" else 0
-    st_slope_dict = {"Upsloping": 0, "Flat": 1, "Downsloping": 2}
-    st_slope = st_slope_dict[st_slope]
+    slope_dict = {"Upsloping": 0, "Flat": 1, "Downsloping": 2}
+    st_slope = slope_dict[st_slope]
 
     input_data = pd.DataFrame({
-        'Age': [age],
-        'Sex': [sex],
-        'ChestPainType': [chest_pain],
-        'RestingBP': [resting_bp],
-        'Cholesterol': [cholesterol],
-        'FastingBS': [fasting_bs],
-        'RestingECG': [resting_ecg],
-        'MaxHR': [max_hr],
-        'ExerciseAngina': [exercise_angina],
-        'Oldpeak': [oldpeak],
-        'ST_Slope': [st_slope]
+        'Age': [age], 'Sex': [sex], 'ChestPainType': [chest_pain],
+        'RestingBP': [resting_bp], 'Cholesterol': [cholesterol],
+        'FastingBS': [fasting_bs], 'RestingECG': [resting_ecg],
+        'MaxHR': [max_hr], 'ExerciseAngina': [exercise_angina],
+        'Oldpeak': [oldpeak], 'ST_Slope': [st_slope]
     })
 
     algonames = ["Logistic Regression", "Decision Tree", "Random Forest", "MLP", "CNN"]
-    modelnames = ["logistic_regression_model.pkl", "decision_tree_model.pkl",
-                  "random_forest_model.pkl", "mlp_model.keras", "cnn_1d_model.keras"]
+    modelnames = [
+        "logistic_regression_model.pkl",
+        "decision_tree_model.pkl",
+        "random_forest_model.pkl",
+        "mlp_model.keras",
+        "cnn_1d_model.keras"
+    ]
 
     predictions = []
 
     def predict_heart_disease(data):
         for modelname in modelnames:
-            if modelname.endswith('.pkl'):
-                model = pickle.load(open(modelname, 'rb'))
-                prediction = model.predict(data)
-            elif modelname.endswith('.keras'):
+            if modelname.endswith(".pkl"):
+                model = pickle.load(open(modelname, "rb"))
+                pred = model.predict(data)
+            else:
                 model = tf.keras.models.load_model(modelname)
-                prediction = model.predict(data.values.reshape(1, -1, 1) if 'cnn' in modelname else data.values)
-                prediction = (prediction > 0.5).astype(int)
-            predictions.append(prediction)
+                pred = model.predict(data.values.reshape(1, -1, 1) if "cnn" in modelname else data.values)
+                pred = (pred > 0.5).astype(int)
+            predictions.append(pred)
         return predictions
 
     if st.button("Predict"):
         st.subheader("Prediction Results:")
-        st.markdown('----------------------------')
+        st.markdown("---")
 
         result = predict_heart_disease(input_data)
 
         for i in range(len(predictions)):
             diagnosis = "No Heart Disease Detected" if result[i][0] == 0 else "Heart Disease Detected"
 
-            st.markdown(f"""
-            <div class="result-card">
-                <div class="result-title">{algonames[i]}</div>
-                <div class="result-text">{diagnosis}</div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(
+                f"""
+                <div class="result-card">
+                    <div class="result-title">{algonames[i]}</div>
+                    <div class="result-text">{diagnosis}</div>
+                </div>
+                """, unsafe_allow_html=True
+            )
 
 
-# ============================== TAB 2 ==============================
+# ======================== TAB 2 ========================
 with tab2:
     st.title("Upload CSV for Bulk Prediction")
-    st.subheader("Instructions:")
+
     st.info("""
 Your CSV MUST contain:
 
@@ -229,11 +253,11 @@ Age, Sex, ChestPainType, RestingBP, Cholesterol, FastingBS,
 RestingECG, MaxHR, ExerciseAngina, Oldpeak, ST_Slope
 """)
 
-    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+    uploaded_file = st.file_uploader("Choose CSV", type="csv")
 
     if uploaded_file is not None:
         data = pd.read_csv(uploaded_file)
-        model = pickle.load(open("logistic_regression_model.pkl", 'rb'))
+        model = pickle.load(open("logistic_regression_model.pkl", "rb"))
 
         expected_columns = [
             'Age', 'Sex', 'ChestPainType', 'RestingBP', 'Cholesterol',
@@ -242,60 +266,47 @@ RestingECG, MaxHR, ExerciseAngina, Oldpeak, ST_Slope
         ]
 
         if not set(expected_columns).issubset(data.columns):
-            st.warning("The uploaded CSV does NOT contain the required columns.")
+            st.warning("CSV missing required columns!")
             st.stop()
 
-        # Maps
-        sex_map = {"M": 0, "F": 1, "Male": 0, "Female": 1}
-        cp_map = {"ATA": 0, "NAP": 1, "ASY": 2, "TA": 3}
-        ecg_map = {"Normal": 0, "ST": 1, "LVH": 2}
-        angina_map = {"Y": 1, "N": 0, "Yes": 1, "No": 0}
-        slope_map = {"Up": 0, "Flat": 1, "Down": 2}
-
         # Auto encode
-        if data['Sex'].dtype == object:
-            data['Sex'] = data['Sex'].map(sex_map)
+        maps = {
+            "Sex": {"M": 0, "F": 1, "Male": 0, "Female": 1},
+            "ChestPainType": {"ATA": 0, "NAP": 1, "ASY": 2, "TA": 3},
+            "RestingECG": {"Normal": 0, "ST": 1, "LVH": 2},
+            "ExerciseAngina": {"Y": 1, "N": 0, "Yes": 1, "No": 0},
+            "ST_Slope": {"Up": 0, "Flat": 1, "Down": 2}
+        }
 
-        if data['ChestPainType'].dtype == object:
-            data['ChestPainType'] = data['ChestPainType'].map(cp_map)
-
-        if data['RestingECG'].dtype == object:
-            data['RestingECG'] = data['RestingECG'].map(ecg_map)
-
-        if data['ExerciseAngina'].dtype == object:
-            data['ExerciseAngina'] = data['ExerciseAngina'].map(angina_map)
-
-        if data['ST_Slope'].dtype == object:
-            data['ST_Slope'] = data['ST_Slope'].map(slope_map)
+        for col, mapping in maps.items():
+            if data[col].dtype == object:
+                data[col] = data[col].map(mapping)
 
         data = data.astype(float)
-
-        # Predict
-        data['Prediction LR'] = ''
-
-        for i in range(len(data)):
-            arr = data.iloc[i, :-1].values.astype(float)
-            data.loc[i, 'Prediction LR'] = model.predict([arr])[0]
-
-        data.to_csv("PredictedHeart.csv", index=False)
+        data["Prediction LR"] = data.apply(lambda row: model.predict([row[:-1]])[0], axis=1)
 
         st.subheader("Prediction Results:")
         st.write(data)
+
         st.markdown(get_downloader_html(data), unsafe_allow_html=True)
 
 
-# ============================== TAB 3 ==============================
+# ======================== TAB 3 ========================
 with tab3:
-    data = {
+    accuracy_data = {
         'Logistic Regression': 85.86,
         'Decision Tree': 80.97,
         'Random Forest': 88.04,
         'MLP': 75.54,
         'CNN': 86.95
     }
-    models = list(data.keys())
-    accuracy = list(data.values())
-    df = pd.DataFrame(list(zip(models, accuracy)), columns=['Models', 'Accuracy'])
+
+    df = pd.DataFrame({
+        "Models": list(accuracy_data.keys()),
+        "Accuracy": list(accuracy_data.values())
+    })
+
     fig = px.bar(df, x='Models', y='Accuracy', color='Accuracy',
                  text='Accuracy', title='Model Accuracy Comparison')
+
     st.plotly_chart(fig)
