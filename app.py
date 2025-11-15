@@ -70,7 +70,7 @@ html, body {{
         0 6px 20px rgba(0,0,0,0.65),
         0 0 26px rgba(255,0,255,0.06) inset;
     transition: transform 0.28s ease, box-shadow 0.28s ease;
-
+}
 
 /* Strong neon edge (outer glowing stroke) via pseudo-element */
 .stTextInput:before, .stNumberInput:before, .stSelectbox:before, .stSlider:before, .stFileUploader:before, .stDateInput:before {{
