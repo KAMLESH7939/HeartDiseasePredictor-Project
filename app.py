@@ -83,7 +83,7 @@ h1 {{
 .input-card {{
     position: relative;
     border-radius: 30px;
-    padding: 25px;
+    padding: 10px;
     margin: 25px 0;
     width: 100%;
     background-image:
