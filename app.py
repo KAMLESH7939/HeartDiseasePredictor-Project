@@ -46,7 +46,7 @@ html, body, [class*="css"] {{
 --------------------------------*/
 h1 {{ 
     text-align: center !important;
-    margin-top: 40px !important;
+    margin-top: 20px !important;
     margin-bottom: 40px !important;
     font-size: 55px !important;
     font-weight: 700 !important;
