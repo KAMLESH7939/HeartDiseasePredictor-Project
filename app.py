@@ -7,12 +7,12 @@ import tensorflow as tf
 import plotly.express as px
 
 # ==========================================================
-#            GLOBAL PAGE CONFIG
+#            PAGE CONFIG
 # ==========================================================
 st.set_page_config(page_title="Cardiac Disease Detection", layout="wide")
 
 # ==========================================================
-#            CUSTOM CSS STYLING
+#            CUSTOM CSS
 # ==========================================================
 st.markdown("""
 <style>
@@ -23,7 +23,13 @@ html, body, [class*="css"] {
     font-family: 'Poppins', sans-serif !important;
 }
 
-/* ---------- BACKGROUND ---------- */
+/* ------------ CENTERED MAIN CONTAINER (REDUCED WIDTH) ------------ */
+.main-container {
+    max-width: 1350px;
+    margin: auto;
+}
+
+/* ------------ BACKGROUND ------------ */
 [data-testid="stAppViewContainer"] {
     background-image: url('gradientt.jpg');
     background-size: cover;
@@ -31,7 +37,7 @@ html, body, [class*="css"] {
     background-attachment: fixed;
 }
 
-/* Center title */
+/* ------------ TITLE ------------ */
 h1 {
     text-align: center !important;
     margin-top: 40px !important;
@@ -42,40 +48,33 @@ h1 {
     text-shadow: 0 0 20px rgba(255, 0, 180, 0.7);
 }
 
-/* ---------- NEON CAPSULE TABS ---------- */
+/* ------------ NEON CAPSULE TABS (NO HOVER EFFECT) ------------ */
 .stTabs [data-baseweb="tab-list"] {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 35px;
+    display: flex !important;
+    justify-content: center !important;
+    gap: 18px !important;
 }
 
 .stTabs [data-baseweb="tab"] {
-    background: rgba(40, 0, 60, 0.5);
-    padding: 10px 25px;
-    border-radius: 30px;
-    border: 1px solid rgba(255, 0, 200, 0.3);
+    background: rgba(40, 0, 60, 0.55);
+    padding: 10px 28px !important;
+    border-radius: 30px !important;
+    border: 1px solid rgba(255, 0, 200, 0.35);
     color: #ffd6ff !important;
-    font-size: 17px;
-    font-weight: 600;
-    transition: 0.25s ease-in-out;
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    transition: none !important;
 }
 
-.stTabs [data-baseweb="tab"]:hover {
-    background: rgba(255, 0, 200, 0.2);
-    border-color: rgba(255, 0, 200, 0.6);
-    box-shadow: 0 0 15px rgba(255, 0, 200, 0.7);
-    transform: translateY(-3px);
-}
-
+/* ACTIVE TAB */
 .stTabs [aria-selected="true"] {
     background: linear-gradient(90deg, #ff00cc, #9900ff) !important;
     color: white !important;
     border: none !important;
-    box-shadow: 0 0 20px rgba(255, 0, 200, 0.8);
+    box-shadow: 0 0 20px rgba(255,0,200,0.7);
 }
 
-/* ---------- INPUT CARD WRAPPER ---------- */
+/* ------------ INPUT CARD ------------ */
 .neon-card {
     width: 100%;
     padding: 22px;
@@ -83,27 +82,20 @@ h1 {
     background: linear-gradient(90deg, rgba(80,0,120,0.7), rgba(20,0,40,0.6));
     border: 2px solid rgba(255,0,200,0.5);
     box-shadow: 0 0 25px rgba(255,0,220,0.2);
-    margin-top: 25px;
-    transition: 0.3s ease;
+    margin-top: 28px;
 }
 
-.neon-card:hover {
-    box-shadow: 0 0 40px rgba(255,0,200,0.5);
-    transform: translateY(-4px);
-}
-
-/* Make the input boxes inside card visible */
 .neon-card label {
     color: #ffffff !important;
     font-size: 18px !important;
     font-weight: 500 !important;
 }
 
-/* ---------- PREDICT BUTTON ---------- */
+/* ------------ PREDICT BUTTON ------------ */
 .predict-btn {
     display: block;
     margin: auto;
-    margin-top: 30px;
+    margin-top: 35px;
     background: linear-gradient(90deg, #ff00cc, #9900ff);
     color: white !important;
     padding: 14px 45px;
@@ -113,29 +105,17 @@ h1 {
     border: none;
     cursor: pointer;
     box-shadow: 0 0 25px rgba(255,0,200,0.5);
-    transition: 0.25s ease-in-out;
 }
 
-.predict-btn:hover {
-    transform: scale(1.08);
-    box-shadow: 0 0 40px rgba(255,0,200,0.9);
-}
-
-/* ---------- RESULT CARDS ---------- */
+/* ------------ RESULT CARD ------------ */
 .result-card {
     width: 100%;
-    margin-top: 25px;
+    margin-top: 28px;
     padding: 22px;
     border-radius: 35px;
     background: linear-gradient(90deg, rgba(80,0,120,0.7), rgba(20,0,40,0.6));
     border: 2px solid rgba(255,0,200,0.6);
     box-shadow: 0 0 40px rgba(255,0,200,0.25);
-    transition: 0.3s;
-}
-
-.result-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 0 55px rgba(255,0,200,0.7);
 }
 
 .result-title {
@@ -154,15 +134,12 @@ h1 {
 """, unsafe_allow_html=True)
 
 # ==========================================================
-#             DOWNLOAD HELPER
+#         MAIN WRAPPER FOR CONTENT WIDTH
 # ==========================================================
-def get_downloader_html(df):
-    csv = df.to_csv(index=False)
-    b64 = base64.b64encode(csv.encode()).decode()
-    return f'<a href="data:file/csv;base64,{b64}" download="predicted_heart_disease.csv">Download CSV File</a>'
+st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
 # ==========================================================
-#                     MAIN TITLE
+#                     TITLE
 # ==========================================================
 st.title("Cardiac Disease Detection Model")
 
@@ -172,88 +149,62 @@ st.title("Cardiac Disease Detection Model")
 tab1, tab2, tab3 = st.tabs(["Predict", "Bulk Predict", "Model Information"])
 
 # ==========================================================
-#                     TAB 1 - PREDICT
+#                     TAB 1
 # ==========================================================
 with tab1:
 
-    # --- Age ---
-    with st.container():
+    # INPUT CARDS
+    def input_card(label, widget):
         st.markdown('<div class="neon-card">', unsafe_allow_html=True)
-        age = st.number_input("Age", min_value=1, max_value=120)
+        val = widget
         st.markdown('</div>', unsafe_allow_html=True)
+        return val
 
-    # --- Sex ---
-    with st.container():
-        st.markdown('<div class="neon-card">', unsafe_allow_html=True)
-        sex = st.selectbox("Sex", ["Male", "Female"])
-        st.markdown('</div>', unsafe_allow_html=True)
+    age = input_card("Age", st.number_input("Age", min_value=1, max_value=120))
+    sex = input_card("Sex", st.selectbox("Sex", ["Male", "Female"]))
+    chest_pain = input_card("Chest Pain Type",
+        st.selectbox("Chest Pain Type",
+            ["Typical Angina", "Atypical Angina", "Non-anginal Pain", "Asymptomatic"]))
 
-    # --- Chest Pain ---
-    with st.container():
-        st.markdown('<div class="neon-card">', unsafe_allow_html=True)
-        chest_pain = st.selectbox("Chest Pain Type", 
-            ["Typical Angina", "Atypical Angina", "Non-anginal Pain", "Asymptomatic"])
-        st.markdown('</div>', unsafe_allow_html=True)
+    resting_bp = input_card("Resting Blood Pressure",
+        st.number_input("Resting Blood Pressure (mm Hg)", min_value=0, max_value=300))
 
-    # --- Resting BP ---
-    with st.container():
-        st.markdown('<div class="neon-card">', unsafe_allow_html=True)
-        resting_bp = st.number_input("Resting Blood Pressure (mm Hg)", min_value=0, max_value=300)
-        st.markdown('</div>', unsafe_allow_html=True)
+    cholesterol = input_card("Cholesterol",
+        st.number_input("Cholesterol (mg/dl)", min_value=0, max_value=1000))
 
-    # --- Cholesterol ---
-    with st.container():
-        st.markdown('<div class="neon-card">', unsafe_allow_html=True)
-        cholesterol = st.number_input("Cholesterol (mg/dl)", min_value=0, max_value=1000)
-        st.markdown('</div>', unsafe_allow_html=True)
+    fasting_bs = input_card("Fasting Blood Sugar",
+        st.selectbox("Fasting Blood Sugar", ["<= 120 mg/dl", "> 120 mg/dl"]))
 
-    # --- Fasting Blood Sugar ---
-    with st.container():
-        st.markdown('<div class="neon-card">', unsafe_allow_html=True)
-        fasting_bs = st.selectbox("Fasting Blood Sugar", ["<= 120 mg/dl", "> 120 mg/dl"])
-        st.markdown('</div>', unsafe_allow_html=True)
+    resting_ecg = input_card("Resting ECG",
+        st.selectbox("Resting ECG", ["Normal",
+                                     "ST-T wave abnormality",
+                                     "Left ventricular hypertrophy"]))
 
-    # --- Resting ECG ---
-    with st.container():
-        st.markdown('<div class="neon-card">', unsafe_allow_html=True)
-        resting_ecg = st.selectbox("Resting ECG", 
-            ["Normal", "ST-T wave abnormality", "Left ventricular hypertrophy"])
-        st.markdown('</div>', unsafe_allow_html=True)
+    max_hr = input_card("Max Heart Rate",
+        st.number_input("Max Heart Rate Achieved", min_value=60, max_value=202))
 
-    # --- Max HR ---
-    with st.container():
-        st.markdown('<div class="neon-card">', unsafe_allow_html=True)
-        max_hr = st.number_input("Max Heart Rate Achieved", min_value=60, max_value=202)
-        st.markdown('</div>', unsafe_allow_html=True)
+    exercise_angina = input_card("Exercise Angina",
+        st.selectbox("Exercise Induced Angina", ["Yes", "No"]))
 
-    # --- Exercise Angina ---
-    with st.container():
-        st.markdown('<div class="neon-card">', unsafe_allow_html=True)
-        exercise_angina = st.selectbox("Exercise Induced Angina", ["Yes", "No"])
-        st.markdown('</div>', unsafe_allow_html=True)
+    oldpeak = input_card("Oldpeak",
+        st.number_input("Oldpeak (ST Depression)", min_value=0.0, max_value=10.0, format="%.1f"))
 
-    # --- Oldpeak ---
-    with st.container():
-        st.markdown('<div class="neon-card">', unsafe_allow_html=True)
-        oldpeak = st.number_input("Oldpeak (ST Depression)", min_value=0.0, max_value=10.0, format="%.1f")
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    # --- ST Slope ---
-    with st.container():
-        st.markdown('<div class="neon-card">', unsafe_allow_html=True)
-        st_slope = st.selectbox("Slope of Peak Exercise ST Segment", ["Upsloping", "Flat", "Downsloping"])
-        st.markdown('</div>', unsafe_allow_html=True)
+    st_slope = input_card("ST Slope",
+        st.selectbox("Slope of Peak Exercise ST Segment", ["Upsloping", "Flat", "Downsloping"]))
 
     # ENCODING
     sex = 0 if sex == "Male" else 1
-    chest_pain_dict = {"Typical Angina":3,"Atypical Angina":0,"Non-anginal Pain":1,"Asymptomatic":2}
-    chest_pain = chest_pain_dict[chest_pain]
+    chest_pain = {"Typical Angina":3, "Atypical Angina":0,
+                  "Non-anginal Pain":1, "Asymptomatic":2}[chest_pain]
+
     fasting_bs = 0 if fasting_bs == "<= 120 mg/dl" else 1
-    resting_ecg_dict = {"Normal":0,"ST-T wave abnormality":1,"Left ventricular hypertrophy":2}
-    resting_ecg = resting_ecg_dict[resting_ecg]
+
+    resting_ecg = {"Normal":0,"ST-T wave abnormality":1,
+                   "Left ventricular hypertrophy":2}[resting_ecg]
+
     exercise_angina = 1 if exercise_angina == "Yes" else 0
-    st_slope_dict = {"Upsloping":0,"Flat":1,"Downsloping":2}
-    st_slope = st_slope_dict[st_slope]
+
+    st_slope = {"Upsloping":0,"Flat":1,"Downsloping":2}[st_slope]
 
     input_data = pd.DataFrame({
         'Age':[age],'Sex':[sex],'ChestPainType':[chest_pain],
@@ -262,7 +213,7 @@ with tab1:
         'Oldpeak':[oldpeak],'ST_Slope':[st_slope]
     })
 
-    modelnames = [
+    models = [
         ("Logistic Regression","logistic_regression_model.pkl"),
         ("Decision Tree","decision_tree_model.pkl"),
         ("Random Forest","random_forest_model.pkl"),
@@ -272,75 +223,70 @@ with tab1:
 
     predictions = []
 
-    def predict_heart_disease(data):
-        for name, modelname in modelnames:
-            if modelname.endswith(".pkl"):
-                model = pickle.load(open(modelname,"rb"))
-                pred = model.predict(data)
+    def run_prediction(data):
+        for name, file in models:
+            if file.endswith(".pkl"):
+                mdl = pickle.load(open(file, "rb"))
+                pred = mdl.predict(data)
             else:
-                model = tf.keras.models.load_model(modelname)
-                pred = model.predict(data.values.reshape(1,-1,1))
+                mdl = tf.keras.models.load_model(file)
+                pred = mdl.predict(data.values.reshape(1,-1,1))
                 pred = (pred > 0.5).astype(int)
             predictions.append(pred)
         return predictions
 
-    # PREDICT BUTTON
-    if st.button("Predict", key="predict_btn", use_container_width=False):
-        st.markdown('<style>.predict-btn{animation: pulse 1.5s infinite;}</style>', unsafe_allow_html=True)
-        st.write("")  
+    # Predict button
+    if st.button("Predict", type="primary", key="predict", help="", 
+                 use_container_width=False):
+        results = run_prediction(input_data)
 
-        results = predict_heart_disease(input_data)
+        for i, (name, _) in enumerate(models):
+            status = "No Heart Disease" if results[i][0] == 0 else "Heart Disease Detected"
 
-        for i, (name, _) in enumerate(modelnames):
-            diagnosis = "No Heart Disease" if results[i][0] == 0 else "Heart Disease Detected"
             st.markdown(f"""
                 <div class="result-card">
                     <div class="result-title">{name}</div>
-                    <div class="result-text">{diagnosis}</div>
+                    <div class="result-text">{status}</div>
                 </div>
             """, unsafe_allow_html=True)
 
 # ==========================================================
-#                TAB 2 - BULK PREDICT
+#                TAB 2 - BULK
 # ==========================================================
 with tab2:
     st.header("Upload CSV for Bulk Prediction")
-    st.info("""
-    CSV must contain: Age, Sex, ChestPainType, RestingBP, Cholesterol,
-    FastingBS, RestingECG, MaxHR, ExerciseAngina, Oldpeak, ST_Slope
-    """)
 
-    file = st.file_uploader("Upload CSV", type="csv")
+    file = st.file_uploader("Upload CSV File", type="csv")
 
     if file:
         df = pd.read_csv(file)
+        mdl = pickle.load(open("logistic_regression_model.pkl","rb"))
 
-        model = pickle.load(open("logistic_regression_model.pkl","rb"))
-        df['Prediction'] = ""
-
-        for i in range(len(df)):
-            arr = df.iloc[i,:-1].values.astype(float)
-            df.loc[i,'Prediction'] = model.predict([arr])[0]
+        df["Prediction"] = mdl.predict(df.values)
 
         st.write(df)
-        st.markdown(get_downloader_html(df), unsafe_allow_html=True)
 
 # ==========================================================
 #                TAB 3 - MODEL INFO
 # ==========================================================
 with tab3:
+
     data = {
-        'Logistic Regression':85.86,
-        'Decision Tree':80.97,
-        'Random Forest':88.04,
-        'MLP':75.54,
-        'CNN':86.95
+        'Logistic Regression': 85.86,
+        'Decision Tree': 80.97,
+        'Random Forest': 88.04,
+        'MLP': 75.54,
+        'CNN': 86.95
     }
-    df = pd.DataFrame({"Models":list(data.keys()), "Accuracy":list(data.values())})
+
+    df = pd.DataFrame({"Models": data.keys(), "Accuracy": data.values()})
 
     fig = px.bar(df, x="Models", y="Accuracy", text="Accuracy", color="Accuracy",
                  title="Model Accuracy Comparison")
     st.plotly_chart(fig)
+
+# CLOSE MAIN WRAPPER
+st.markdown('</div>', unsafe_allow_html=True)
 
 
 
