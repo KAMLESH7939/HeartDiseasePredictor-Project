@@ -83,8 +83,8 @@ h1 {{
 .input-card {{
     position: relative;
     border-radius: 30px;
-    padding: 10px;
-    margin: 10px 0;
+    padding: 6px;
+    margin: 17px 0;
     width: 100%;
     background-image:
         linear-gradient(rgba(18,12,25,0.90), rgba(18,12,25,0.90)),
